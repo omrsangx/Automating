@@ -2,24 +2,38 @@
 
 # Author: omrsangx
 
+CURRENT_DATE=$(date +%Y_%m_%d_%H_%M)
+USER_SHARE="shareuser"
+IP_ADDRESS_ALLOWED="192.168.5.4"
+ROOT=$(whoami)
+INSTALLATION_LOG="/tmp/smb_setup_$CURRENT_DATE"
+OS_VERSION=$(grep -iE "^ID=" /etc/os-release | awk -F"=" '{print $2}')
+
 # Run as root
-if [ whoami != "root" ]
+if [ $ROOT != "root" ] ; then
+    echo "$(whoami) is not a root user"
     echo "Run as root"
     echo "Terminating the script"
-
-else
-    funcSamba
+    exit 1    
 fi
 
-2> /tmp/automating_error.txt
+if [ ! -d /smb ] ; then
+        mkdir /smb
+fi
 
-funcSamba () {
-    yum update -y
-    yum install samba -y
+if [ $OS_VERSION == "rhel" ] || [ $OS_VERSION == "centos" ] ; then
+    echo "CentOS/RHEL"
+    yum update -y | tee -a $INSTALLATION_LOG
+    yum install samba -y | tee -a $INSTALLATION_LOG
+fi
 
-    # ------> Note for the future, the smb.conf can be predefine and then copy to the server  
-    # ------> CHECK /etc/smb.conf
-    cat << EOF > /etc/samba/smb.conf  
+if [ $OS_VERSION == "ubuntu" ] || [ $OS_VERSION == "debian" ] ; then
+    echo "Ubuntu/Debian"
+    apt update -y | tee -a $INSTALLATION_LOG
+    apt install samba -y | tee -a $INSTALLATION_LOG
+fi
+
+cat << EOF > /etc/samba/smb.conf  
 # See smb.conf.example for a more detailed config file or
 # read the smb.conf manpage.
 # Run 'testparm' to verify the config is correct after
@@ -28,18 +42,15 @@ funcSamba () {
 [global]
         workgroup = SAMBA
         security = user
-
         passdb backend = tdbsam
-
         printing = cups
         printcap name = cups
         load printers = yes
         cups options = raw
-
         protocol = SMB3
         client min protocol = SMB3
-        client max protocol = SMB3
-
+        client max protocol = SMB3 
+        smb encrypt = auto
         client ntlmv2 auth = yes
         usershare allow guests = No
 
@@ -69,12 +80,12 @@ funcSamba () {
         comment = Samba Server
         path = /smb
         browseable = Yes
-        valid users = shareuser
+        valid users = $USER_SHARE
         read only = No
         writable = Yes
         browseable = Yes
         invalid users = root bin daemon nobody named sys tty disk mem kmem users admin guest
-        hosts allow = 192.168.5.4
+        hosts allow = $IP_ADDRESS_ALLOWED
         interfaces = eth0
         # deny hosts =
         # log file = /var/log/samba/log.%m
@@ -89,32 +100,26 @@ funcSamba () {
 
 EOF
 
-    # useradd shareuser
-    sudo useradd --no-create-home --uid 2040 --shell /bin/false shareuser
-    smbpasswd -a shareuser    # ------> this need some working
-    mkdir /smb
-    chmod 777 /smb
-    sudo chown -R user_name:user_group /smb
+# useradd shareuser
+sudo useradd --no-create-home --uid 2040 --shell /bin/false $USER_SHARE | tee -a $INSTALLATION_LOG
+smbpasswd -a $USER_SHARE
+mkdir /smb
+chmod 754 /smb
+sudo chown -R $USER_SHARE:$USER_SHARE /smb | tee -a $INSTALLATION_LOG
 
-    # SMB Services enable, start
-    sudo systemctl enable --now {smb,nmb}
-    systemctl start smb
-    systemctl status smb
+# SMB Services enable, start
+sudo systemctl enable --now {smb,nmb} | tee -a $INSTALLATION_LOG
+systemctl start smb | tee -a $INSTALLATION_LOG
+systemctl status smb | tee -a $INSTALLATION_LOG
 
-    # SELinux Configuration
-    setsebool -P samba_export_all_ro=1 samba_export_all_rw=1
+# SELinux Configuration
+setsebool -P samba_export_all_ro=1 samba_export_all_rw=1 | tee -a $INSTALLATION_LOG
 
-    # Firewall Configuration:
-    # ------> also the firewall configuration can be copied 
-    # iptables -A INPUT -j ACCEPT
-    # ufw allow samba
-    sudo firewall-cmd --permanent --add-service=samba
-    sudo firewall-cmd --reload
-}
-
- if [ ! -d /smb ] ; then
-        mkdir /smb
-fi
+# Firewall Configuration
+# iptables -I INPUT -j ACCEPT
+ufw allow samba | tee -a $INSTALLATION_LOG
+# sudo firewall-cmd --permanent --add-service=samba
+# sudo firewall-cmd --reload
 
 # Samba resource page:
 # https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
