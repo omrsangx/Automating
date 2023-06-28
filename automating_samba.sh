@@ -3,7 +3,7 @@
 # Author: omrsangx
 
 ROOT=$(whoami)
-$DATE=$(date +%Y_%m_%d_%H_%M)
+DATE=$(date +%Y_%m_%d_%H_%M)
 SHARE_USER="shareuser"
 SHARE_NAME="devShare"
 SHARE_WORKGROUP="SAMBA"
@@ -98,7 +98,7 @@ cat << EOF > /etc/samba/smb.conf
         # deny hosts =
         log file = /var/log/samba/log.%m
         hosts deny = ALL
-        #encrypt passwords = Yes
+        encrypt passwords = Yes
         public = No
         guest only = No
         guest ok = No
@@ -160,5 +160,5 @@ testparm
 # https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
 
 # Mapping shre from Windows:
-# \\$IP_ADDRESS_ALLOWED\$SHARE_NAME\
-# \\192.168.5.4\devShare
+echo "You will be able to map this share in Windows using the follwoing \\$IP_ADDRESS_ALLOWED\$SHARE_NAME"
+
