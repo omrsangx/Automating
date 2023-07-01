@@ -5,3 +5,4 @@ I am not covering a specific programming language.
 These are the scripts on this repo.
 #### [Shell Script]
 - `automating_samba.sh`
+- `selenium-webdriver-setup.sh`
