@@ -4,14 +4,14 @@
 # Author: omrsangx
 
 ROOT=$(whoami)
-NODE_VERSION='v18.16.1'
-SELENIUM_DIRECTORY='/home/$USER/selenium-webdirver'
+NODE_VERSION="v18.16.1"
+SELENIUM_DIRECTORY="/home/$USER/selenium-webdirver"
 DRIVER_DIRECTORY="$SELENIUM_DIRECTORY/drivers"
-SELENIUM_TEST_DRIVER='webDriver.js'
+SELENIUM_TEST_DRIVER="webDriver.js"
 DATE=$(date +%Y_%m_%d_%H_%M)
-INSTALLATION_LOG='/tmp/selenium_setup_$DATE.log'
-GECKODRIVER_PATH='$SELENIUM_DIRECTORY/geckodriver'
-CHROMEDRIVER_PATH='$SELENIUM_DIRECTORY/chromedriver'
+INSTALLATION_LOG="/tmp/selenium_setup_$DATE.log"
+GECKODRIVER_PATH="$SELENIUM_DIRECTORY/geckodriver"
+CHROMEDRIVER_PATH="$SELENIUM_DIRECTORY/chromedriver"
 OS_VERSION=$(grep -iE "^ID=" /etc/os-release | awk -F"=" '{print $2}')
 
 # Checking access level
