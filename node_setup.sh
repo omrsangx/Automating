@@ -6,7 +6,8 @@
 ROOT=$(whoami)
 DATE=$(date +%Y_%m_%d_%H_%M)
 INSTALLATION_LOG="/tmp/node_setup_$DATE.log"
-OS_VERSION=$(grep -iE "^ID=" /etc/os-release | awk -F"=" '{print $2}')
+# OS_VERSION=$(grep -iE "^ID=" /etc/os-release | awk -F"=" '{print $2}')
+OS_VERSION=$(grep -iE "^ID=" /etc/os-release | grep -oE "rhel|ubuntu")
 NODE_VERSION="v18.16.1"
 NODE_APP_DIRECTORY="/home/$USER/node-app"
 
