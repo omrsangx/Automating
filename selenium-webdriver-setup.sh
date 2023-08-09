@@ -12,7 +12,8 @@ DATE=$(date +%Y_%m_%d_%H_%M)
 INSTALLATION_LOG="/tmp/selenium_setup_$DATE.log"
 GECKODRIVER_PATH="$SELENIUM_DIRECTORY/geckodriver"
 CHROMEDRIVER_PATH="$SELENIUM_DIRECTORY/chromedriver"
-OS_VERSION=$(grep -iE "^ID=" /etc/os-release | awk -F"=" '{print $2}')
+# OS_VERSION=$(grep -iE "^ID=" /etc/os-release | awk -F"=" '{print $2}')
+OS_VERSION=$(grep -iE "^ID=" /etc/os-release | grep -oE "rhel|ubuntu")
 
 # Checking access level
 if [ $ROOT = "root" ] ; then
