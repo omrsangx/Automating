@@ -203,3 +203,4 @@ echo "========> To deactivate, enter: conda deactivate"
 echo "========> To relaunch Jupyter Notebook after shutdown/reboot/closed, run: nohup bash -c "jupyter notebook" &"
 
 echo -e "\n"
+echo "Access your Jupyter Notebook using this link: https://JUPYTER_NOTEBOOK_IP_ADDRESS:JYPTER_NOTEBOOK_PORT"
