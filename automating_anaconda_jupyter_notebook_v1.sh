@@ -105,7 +105,7 @@ c.NotebookApp.ip = '$JUPYTER_NOTEBOOK_IP_ADDRESS'
 EOL
 
 echo "Running Jupyter Notebook in the background"
-# nohup bash -c "jupyter notebook" &
+nohup bash -c "jupyter notebook" &
 
 PREFIX="${HOME:-/opt}/anaconda3"
 echo "========> Anaconda packages are located in: $PREFIX"
